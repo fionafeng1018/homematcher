@@ -1,17 +1,13 @@
 import React from 'react';
 import { FormControl, TextField, FormHelperText, Button, Grid } from "@material-ui/core";
+import CommentBox from '../CommentBox/CommentBox';
 
 class CommentForm extends React.Component{
 
-    constructor(){
-        super();
-
-        this.state ={
-            comment:""
-        }
+    handleSubmit(event){
+      event.preventDefault();
+      this.props._addComment(this.author.value,this.content.value)
     }
-
-
 
     render(){
         return (
@@ -34,7 +30,7 @@ class CommentForm extends React.Component{
               <FormHelperText id="my-helper-text">
                 We'll never share your personal information.
               </FormHelperText>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={this._addComment()}>
                 SUBMIT
               </Button>
             </FormControl>
