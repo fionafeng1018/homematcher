@@ -1,35 +1,38 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {FormControl,TextField,FormHelperText,Button,Grid,Paper,Divider,} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from 'axios';
 
 
 //make Comment a functional component
 const useStyles = makeStyles({
   content: {
     textAlign: "left",
-    paddingLeft: "2rem"
+    paddingLeft: "2rem",
   },
-  author:{
-    paddingLeft:"2rem"
+  author: {
+    paddingLeft: "2rem",
   },
   time: {
     color: "grey",
     textAlign: "left",
+    paddingLeft: "2rem"
   },
   divider: {
     margin: "20px",
   },
   paper: {
     padding: "40px 20px",
-  }
+  },
 });
       
-const Comment = ({ author, content }) => (
+const Comment = ({ author, content, date }) => (
   <div>
     <Grid container wrap="nowrap" spacing={2}>
       <Grid justifyContent="left" item xs zeroMinWidth>
         <h4 className={useStyles().author}>{author}</h4>
         <p className={useStyles().content}>{content}</p>
+        <p className={useStyles().time}>{date}</p>
       </Grid>
     </Grid>
     <Divider variant="fullWidth" className={useStyles().divider}/>
@@ -81,26 +84,38 @@ const CommentForm = ({addComment})=>{
 
 //make CommentBox a functional componet
 const CommentBox = ()=>{
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "Fiona",
-      content:
-        "A review is an evaluation of a publication, service, or company such as a movie, video game, musical composition, book; a piece of hardware like a car, home appliance, or computer; or an event or performance, such as a live music concert, play, musical theater show, dance show, or art exhibition.",
-    },
-    {
-      id: 2,
-      author: "Dan",
-      content:
-        "A review is an evaluation of a publication, service, or company such as a movie, video game, musical composition, book; a piece of hardware like a car, home appliance, or computer; or an event or performance, such as a live music concert, play, musical theater show, dance show, or art exhibition.",
-    }
-  ]);
+  const [comments, setComments] = useState([]);
 
-  const addComment = (author, content) =>{
+  useEffect(()=>{
+    axios
+      .get("/posts")
+      .then((response) => {
+        setComments(response.data);
+      })
+      .catch(error=>console.log(error));
+  },[]);//The useEffect hook takes two arguments, a function and a list of dependencies. If the function or the dependencies change, the function is called.
+  //this hook will only run when the component initializes. It won't run any other time because it doesn't have any dependencies to watch.
+  //Using an empty array provides almost the same functionality as the componentDidMount() lifecycle method from a class component.
+
+  const mapComment = (comments)=>{  
+    return comments.map(comment=>{
+      return (
+        <Comment
+          key={comment.id}
+          author={comment.author}
+          content={comment.content}
+          date={comment.date}
+        />
+      );
+    })
+  }
+
+  const addComment = (author, content, date) =>{
     const newComment = {
       id:comments.length+1,
       author,
-      content
+      content,
+      date
     }
     const newComments = [...comments, newComment];
     setComments(newComments);
@@ -110,21 +125,10 @@ const CommentBox = ()=>{
     <div className="App ml-2 mr-2">
       <h1>Comments</h1>
       <CommentForm addComment={addComment} />
-      <Paper className={useStyles().paper}>
-        {comments.map((comment) => {
-          return (
-            <Comment
-              key={comment.id}
-              author={comment.author}
-              content={comment.content}
-            />
-          );
-        })}
-      </Paper>
+      <Paper className={useStyles().paper}>{mapComment(comments)}</Paper>
     </div>
   );
 }
 
 export default CommentBox;
-
 

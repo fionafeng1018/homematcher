@@ -9,6 +9,7 @@ import {
   Avatar,
   Divider,
 } from "@material-ui/core";
+import axios from "axios";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -36,6 +37,7 @@ class Comment extends React.Component {
           <Grid justifyContent="left" item xs zeroMinWidth>
             <h4>{this.props.author}</h4>
             <p style={commentStyle.content}>{this.props.content}</p>
+            <p>{this.props.date}</p>
           </Grid>
         </Grid>
         <Divider
@@ -98,21 +100,19 @@ export default class CommentBox extends React.Component {
     super();
 
     this.state = {
-      comments: [
-        {
-          id: 1,
-          author: "Fiona",
-          content:
-            "A review is an evaluation of a publication, service, or company such as a movie, video game, musical composition, book; a piece of hardware like a car, home appliance, or computer; or an event or performance, such as a live music concert, play, musical theater show, dance show, or art exhibition.",
-        },
-        {
-          id: 2,
-          author: "Dan",
-          content:
-            "A review is an evaluation of a publication, service, or company such as a movie, video game, musical composition, book; a piece of hardware like a car, home appliance, or computer; or an event or performance, such as a live music concert, play, musical theater show, dance show, or art exhibition.",
-        },
-      ],
+      comments: []
     };
+  }
+
+  componentDidMount(){
+    axios
+      .get("/posts")
+      .then((response) => {
+        console.log(response.data);
+        this.setState({comments: response.data});
+     
+      })
+      .catch((error) => console.log(error));
   }
 
   getComments() {
@@ -122,6 +122,7 @@ export default class CommentBox extends React.Component {
           key={comment.id}
           author={comment.author}
           content={comment.content}
+          date={comment.date}
         />
       );
     });

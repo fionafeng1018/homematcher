@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     const post = new Post({
-        title: req.body.title,
-        description: req.body.description
+        author: req.body.author,
+        content: req.body.content
     });
 
     try {
@@ -52,7 +52,7 @@ router.patch('/:postId', async(req,res)=>{
     try{
         const updatedPost = await Post.updateOne(
             {_id:req.params.postId},
-            {$set:{title:req.body.title}}
+            {$set:{author:req.body.author}}
         );
         res.json(updatedPost);
     }catch(err){

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 //create schema: the way your data looks
 const PostSchema = mongoose.Schema({
-    title: {
+    author: {
         type: String,
         required: true
     },
-    description: {
+    content: {
         type: String,
         required: true
     },
