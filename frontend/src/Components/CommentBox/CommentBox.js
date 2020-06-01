@@ -26,18 +26,26 @@ const useStyles = makeStyles({
   },
 });
       
-const Comment = ({ author, content, date }) => (
-  <div>
-    <Grid container wrap="nowrap" spacing={2}>
-      <Grid justifyContent="left" item xs zeroMinWidth>
-        <h4 className={useStyles().author}>{author}</h4>
-        <p className={useStyles().content}>{content}</p>
-        <p className={useStyles().time}>{date}</p>
+const Comment = ({ author, content, date, deleteComment, index}) => {
+
+  // const handleDelete = (index)=>{
+  //   deleteComment(index);
+  // }
+
+  return(
+    <div>
+      <Grid container wrap="nowrap" spacing={2}>
+        <Grid justifyContent="left" item xs zeroMinWidth>
+          <h4 className={useStyles().author}>{author}</h4>
+          <p className={useStyles().content}>{content}</p>
+          <p className={useStyles().time}>{date}</p>
+          <Button onClick={()=> deleteComment(index)}>Delete</Button>
+        </Grid>
       </Grid>
-    </Grid>
-    <Divider variant="fullWidth" className={useStyles().divider}/>
-  </div>
-);
+      <Divider variant="fullWidth" className={useStyles().divider} />
+    </div>
+  )
+};
 
 //create a useInput hook
 const useInput = initialValue =>{
@@ -67,12 +75,11 @@ const CommentForm = ({addComment})=>{
     addComment(author, content);
     resetAuthor();
     resetContent();
-
   }
 
   return (
     <Grid container spacing={2}>
-      <FormControl color="primary" fullWidth="true" className="ml-2 mr-2">
+      <FormControl color="primary" fullWidth='true' className="ml-2 mr-2">
         <TextField id="outlined-basic" label="Name" variant="outlined" className="mb-2" {...bindAuthor}/>
         <TextField id="outlined-basic" label="Add a comment" variant="outlined" multiline rowsMax={6} rows={4} {...bindContent}  />
         <FormHelperText id="my-helper-text"> We'll never share your personal information. </FormHelperText>
@@ -88,7 +95,7 @@ const CommentBox = ()=>{
 
   useEffect(()=>{
     axios
-      .get("/posts")
+      .get("/comments")
       .then((response) => {
         setComments(response.data);
       })
@@ -98,26 +105,46 @@ const CommentBox = ()=>{
   //Using an empty array provides almost the same functionality as the componentDidMount() lifecycle method from a class component.
 
   const mapComment = (comments)=>{  
-    return comments.map(comment=>{
+    return comments.map((comment, index)=>{
       return (
         <Comment
-          key={comment.id}
+          key={comment._id}
           author={comment.author}
           content={comment.content}
           date={comment.date}
+          index={index}
+          deleteComment={deleteComment}
         />
       );
     })
   }
 
-  const addComment = (author, content, date) =>{
+  const addComment = (author, content) =>{
+    let tempDate = new Date("2020-05-12T01:52:15.476Z");
+    let submitDate = tempDate.getFullYear() + '-' + (tempDate.getMonth()+1) + '-' + tempDate.getDate() +' '+ tempDate.getHours()+':'+ tempDate.getMinutes();
+    console.log(submitDate)
+
+    axios
+      .post("/comments", {
+        author: author,
+        content: content,
+        date: tempDate
+      })
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
+
     const newComment = {
-      id:comments.length+1,
       author,
       content,
-      date
-    }
+      date: submitDate
+    };
     const newComments = [...comments, newComment];
+    setComments(newComments);
+  }
+
+  const deleteComment = (index) =>{
+    const newComments = [...comments];
+    newComments.splice(index,1);
     setComments(newComments);
   }
 
