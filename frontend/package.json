@@ -13,7 +13,7 @@
     "eslint-config-react-app": "^5.2.0",
     "eslint-plugin-flowtype": "^3.13.0",
     "jquery": "^3.5.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "popper.js": "^1.16.1",
     "react": "^16.13.0",
     "react-commentbox": "^3.0.1",
